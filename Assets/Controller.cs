@@ -4,6 +4,7 @@ using UnityEngine;
 using HoloToolkit.Unity.InputModule;
 using UnityEngine;
 using EasyWiFi.Core;
+using UnityEngine.UI;
 
 namespace HoloToolkit.Unity.SpatialMapping
 {
@@ -25,6 +26,8 @@ namespace HoloToolkit.Unity.SpatialMapping
         float lastHitDistance=300;
         float distance = 10f;
         pointer Pointer;
+        GameObject Loading;
+        CanvasRenderer image;
 
         bool objectIsSelected = false;
 
@@ -42,14 +45,21 @@ namespace HoloToolkit.Unity.SpatialMapping
         int lastFrameNumTouches;
         float lastFrameZoomFactor;
 
+        //hovertime
+         float HoverTime;
+        float waitOverTime=2f;
+        float waitAmount;
+         Image circularSilder;
+
         // Use this for initialization
         void Start()
         {
             goFollow = Camera.main.gameObject;
             v3Offset = transform.position - goFollow.transform.position;
             Pointer = GetComponentInChildren<pointer>();
-
-
+            HoverTime = Time.time;
+            Loading = GameObject.Find("Canvas");
+            circularSilder = Loading.GetComponentInChildren<Image>();
         }
 
         // Update is called once per frame
@@ -58,6 +68,12 @@ namespace HoloToolkit.Unity.SpatialMapping
             transform.position = goFollow.transform.position + v3Offset;
             select();
             takeOver();
+            rotate();
+            Debug.Log(SelectedObjectgaze);
+            if (SelectedObjectgaze == null)
+                circularSilder.fillAmount = waitAmount;
+            else
+                circularSilder.fillAmount = 0f;
         }
 
       
@@ -76,14 +92,28 @@ namespace HoloToolkit.Unity.SpatialMapping
             //select with gaze
             Vector3 headPosition = Camera.main.transform.position;
             Vector3 gazeDirection = Camera.main.transform.forward;
-            if (Physics.Raycast(headPosition, gazeDirection, out hitInfo, 300.0f) && !isPressed2)
+           
+           
+            if (Physics.Raycast(headPosition, gazeDirection, out hitInfo, 300.0f) && !isPressed2 )
             {
-                SelectedObjectgaze = hitInfo.collider.gameObject;
-                
-                rotate();
+                waitAmount= (Time.time - HoverTime) / waitOverTime;
+                if (Loading != null)
+                    Loading.transform.position = hitInfo.point-new Vector3(0,0,0.5f);
+                if (Time.time>=HoverTime+waitOverTime)
+                {
+                    SelectedObjectgaze = hitInfo.collider.gameObject;
+                    Debug.Log("ObjectSelected");
+                    HoverTime = Time.time;
+                    
+                }
                
+                
             }
-
+            else { HoverTime = Time.time;
+                SelectedObjectgaze = null;
+                if (Loading != null)
+                 Loading.transform.position = Camera.main.transform.position; }
+                
 
         }
 
@@ -98,6 +128,7 @@ namespace HoloToolkit.Unity.SpatialMapping
             {
                 SelectedObject = null;
                 objectIsSelected = false;
+
             }
 
         }
@@ -116,7 +147,8 @@ namespace HoloToolkit.Unity.SpatialMapping
             else
             {
                 calibrate = false;
-                SelectedObjectgaze = null;
+               
+                
             }
 
         }
@@ -131,7 +163,8 @@ namespace HoloToolkit.Unity.SpatialMapping
 
         public void rotate()
         {
-            SelectedObjectgaze.transform.rotation = this.transform.rotation;
+            if(SelectedObjectgaze!=null)
+                 SelectedObjectgaze.transform.rotation = this.transform.rotation;
         }
 
         public void resize(SliderControllerType slider)
@@ -166,23 +199,29 @@ namespace HoloToolkit.Unity.SpatialMapping
         public void moveForwardBackward(PinchZoomTouchpadControllerType touchpad)
         {
             Vector3 actionVector3;
-            lastFrameNumTouches = numTouches;
+            EasyWiFiConstants.AXIS touchpadHorizontal = EasyWiFiConstants.AXIS.XAxis;
+        EasyWiFiConstants.AXIS touchpadVertical = EasyWiFiConstants.AXIS.YAxis;
+        lastFrameNumTouches = numTouches;
              lastFrameZoomFactor = zoomFactor;
              lastFrameHorizontal = horizontal;
              lastFrameVertical = vertical;
              float zoomSensitivity = 4f;
-
-             numTouches = touchpad.TOUCH_COUNT;
+              float sensitivity = 2f;
+            numTouches = touchpad.TOUCH_COUNT;
              zoomFactor = touchpad.ZOOM_FACTOR * zoomSensitivity;
-             horizontal = touchpad.TOUCH1_POSITION_HORIZONTAL;
-             vertical = touchpad.TOUCH1_POSITION_VERTICAL;
+             horizontal = touchpad.TOUCH1_POSITION_HORIZONTAL* sensitivity;
+             vertical = touchpad.TOUCH1_POSITION_VERTICAL* sensitivity;
             if (numTouches > 0 && lastFrameNumTouches > 0)
             {
-                if (numTouches == 2)
+                if (numTouches == 1 && SelectedObjectgaze != null)
                 {
-                    //zooming in the camera
-                    actionVector3 = new Vector3(0f, 0f, zoomFactor - lastFrameZoomFactor);
-                    transform.Translate(actionVector3);
+                    actionVector3 = EasyWiFiUtilities.getControllerVector3(horizontal - lastFrameHorizontal, vertical - lastFrameVertical, touchpadHorizontal, touchpadVertical);
+                    SelectedObjectgaze.transform.position += actionVector3;
+                }
+                if (numTouches == 2&& SelectedObjectgaze!=null)
+                {
+                    
+                     SelectedObjectgaze.transform.position = SelectedObjectgaze.transform.position + Camera.main.transform.forward * (zoomFactor - lastFrameZoomFactor) ;
                 }
             }
         }
