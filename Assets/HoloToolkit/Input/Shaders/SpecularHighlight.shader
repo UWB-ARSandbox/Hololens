@@ -2,7 +2,7 @@
 // Copyright (C) Microsoft. All rights reserved. 
 //
 
-Shader "HoloToolkit/SpecularHighlight"
+Shader "Custom/SpecularHighlight"
 {
     Properties
     {

@@ -15,13 +15,15 @@ public class AnchorTextAbove : MonoBehaviour
     {
         mainCamera = Camera.main;
         textTM = this.GetComponent<TextMesh>();
-        textTM.text = Text;
+        
+
     }
 
     // Update is called once per frame
     void Update()
     {
         textTM.transform.forward = mainCamera.transform.forward;
+        textTM.text = Text;
     }
 
 }

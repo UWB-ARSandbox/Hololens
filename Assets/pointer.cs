@@ -20,16 +20,10 @@ public class pointer : MonoBehaviour {
 
         if (drawline)
         {
-            Physics.Raycast(transform.position, transform.up, out hit, 300f);
-            if (hit.collider)
-            {
-                distance = hit.distance / 4.8f;
-                lineRenderer.SetPosition(1, new Vector3(0, distance, 0));
-            }
-            else
-            {
+            
                 lineRenderer.SetPosition(1, new Vector3(0, 300, 0));
-            }
+            
+
         }
         else
         {

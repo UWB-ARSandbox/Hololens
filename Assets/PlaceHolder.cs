@@ -12,21 +12,20 @@ public class PlaceHolder : MonoBehaviour, IInputClickHandler
     [Tooltip("Distance, in meters, to offset the cursor from the collision point.")]
     public float DistanceFromCollision = 0f;
     bool loaded;
+    private GameObject phone;
+    private Controller controller;
     private void Start()
     {
         InputManager.Instance.PushFallbackInputHandler(
           this.gameObject);
+        phone = GameObject.Find("phone");
+        controller = phone.GetComponent<Controller>();
     }
    
     
 
     public void OnInputClicked(InputEventData eventData)
     {
-        Debug.Log("CLICK!");
-        // Place the cursor at the calculated position.
-        //Vector3 position = GazeManager.Instance.HitPosition + GazeManager.Instance.GazeNormal * DistanceFromCollision;
-
-
-       // _trophy.Add(PhotonNetwork.Instantiate(Trophy.name, position, Quaternion.identity, 0));
+        
     }
 }

@@ -17,11 +17,7 @@ public class Spawnable : MonoBehaviour, IInputClickHandler
         this.sphereNumber = ++sphereCount;
     }
     
-    void OnMouseDown()
-    {
-        Debug.Log("CLick");
-        calibrate = true;
-    }
+   
 
     public void OnInputClicked(InputEventData eventData)
     {

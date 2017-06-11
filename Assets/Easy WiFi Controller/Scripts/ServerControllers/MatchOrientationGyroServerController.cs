@@ -15,7 +15,7 @@ namespace EasyWiFi.ServerControls
         private readonly Quaternion baseIdentity = Quaternion.Euler(90,0, 0);
         private readonly Quaternion landscapeRight = Quaternion.Euler(0, 0, 90);
         private readonly Quaternion landscapeLeft = Quaternion.Euler(0, 0, -90);
-        private readonly Quaternion upsideDown = Quaternion.Euler(0, 0, 180);
+        private readonly Quaternion upsideDown = Quaternion.Euler(0, 0, 90);
 
         private Quaternion cameraBase = Quaternion.identity;
         private Quaternion calibration = Quaternion.identity;
@@ -82,8 +82,9 @@ namespace EasyWiFi.ServerControls
             orientation.z = gyro[index].GYRO_Z;
             dtime = Time.deltaTime;
             quaternion = new Quaternion(orientation.x, orientation.y, orientation.z, orientation.w);
-            transform.localRotation = Quaternion.Slerp(transform.localRotation,
-                cameraBase * (ConvertRotation(referanceRotation * quaternion) * GetRotFix()), lowPassFilterFactor);
+             transform.localRotation = Quaternion.Slerp(transform.localRotation,
+                 cameraBase * (ConvertRotation(referanceRotation * quaternion) * GetRotFix()), lowPassFilterFactor);
+            
             if (firsttime)
             {
                 UpdateCalibration(true);
@@ -124,7 +125,7 @@ namespace EasyWiFi.ServerControls
         {
             if (onlyHorizontal)
             {
-                var fw = (quaternion) * (-Vector3.forward);
+                var fw = (quaternion) * (Vector3.up);
                 fw.z = 0;
                 if (fw == Vector3.zero)
                 {

@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: SpawnedObjectMaterial
-  m_Shader: {fileID: 4800000, guid: 0214e08dd266c1e41ae08ec958cc641b, type: 3}
+  m_Shader: {fileID: 4800000, guid: 1b2351b489d58b84cb493d531ddeb9e8, type: 3}
   m_ShaderKeywords: _EMISSION _USEMAINTEX_ON _USEOCCLUSIONRIM_ON
   m_LightmapFlags: 1
   m_CustomRenderQueue: -1
@@ -75,6 +75,12 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - first:
+        name: _SpecGlossMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - first:
         name: _BumpScale
@@ -114,7 +120,7 @@ Material:
       second: 0.02
     - first:
         name: _RimPower
-      second: 3
+      second: 4
     - first:
         name: _SmoothnessTextureChannel
       second: 0
@@ -158,3 +164,6 @@ Material:
     - first:
         name: _RimColor
       second: {r: 0, g: 0.751724, b: 1, a: 1}
+    - first:
+        name: _SpecColor
+      second: {r: 0.2, g: 0.2, b: 0.2, a: 1}

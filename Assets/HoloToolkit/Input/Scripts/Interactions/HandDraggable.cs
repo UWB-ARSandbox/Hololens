@@ -36,9 +36,10 @@ namespace HoloToolkit.Unity.InputModule
         public bool IsKeepUpright = false;
 
         [Tooltip("Should the object be oriented towards the user as it is being dragged?")]
-        public bool IsOrientTowardsUser = true;
+        public bool IsOrientTowardsUser = false;
 
         public bool IsDraggingEnabled = true;
+        public float mode = 0;
 
         private Camera mainCamera;
         private bool isDragging;
@@ -51,10 +52,14 @@ namespace HoloToolkit.Unity.InputModule
 
         private Vector3 draggingPosition;
         private Quaternion draggingRotation;
-
+        private GameObject phone;
+        private Controller controller;
         private IInputSource currentInputSource = null;
         private uint currentInputSourceId;
+        Vector3 lastDrag=new Vector3(0,0,0);
 
+        AnchorTextAbove Echo;
+       
         private void Start()
         {
             if (HostTransform == null)
@@ -63,6 +68,8 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             mainCamera = Camera.main;
+            phone = GameObject.Find("phone");
+            controller = phone.GetComponent<Controller>();
         }
 
         private void OnDestroy()
@@ -100,10 +107,11 @@ namespace HoloToolkit.Unity.InputModule
             {
                 return;
             }
-
+            
             // Add self as a modal input handler, to get all inputs during the manipulation
             InputManager.Instance.PushModalInputHandler(gameObject);
-
+            controller.highlightObject(gameObject);
+            Echo = gameObject.GetComponentInChildren<AnchorTextAbove>();
             isDragging = true;
             //GazeCursor.Instance.SetState(GazeCursor.State.Move);
             //GazeCursor.Instance.SetTargetObject(HostTransform);
@@ -199,16 +207,52 @@ namespace HoloToolkit.Unity.InputModule
                 Vector3 objForward = mainCamera.transform.TransformDirection(objRefForward); // in world space
                 draggingRotation = Quaternion.LookRotation(objForward);
             }
+            HostTransform.GetComponent<Rigidbody>().isKinematic = true;
 
+            if (lastDrag == new Vector3(0, 0, 0))
+            {
+                lastDrag = draggingPosition;
+            }
+            float rotationFactorx = draggingPosition.x - lastDrag.x;
+            float rotationFactory = draggingPosition.y - lastDrag.y;
+            float rotationFactorz = draggingPosition.z - lastDrag.z;
             // Apply Final Position
-            HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
-            HostTransform.rotation = draggingRotation;
+            if (controller.modeHand==0)
+            {
+                Echo.Text = "translate";
+                HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
+                HostTransform.rotation = draggingRotation;
+            }   
+             else if (controller.modeHand == 1)
+            {
+                Echo.Text = "rotate";   
+               
+                
+                HostTransform.Rotate(new Vector3(1 * rotationFactory*50f, -1 * rotationFactorx * 50f, -1 * rotationFactorz *50f));        
+            }
+                 
+             else if (controller.modeHand == 2)
+             {
+                Echo.Text = "rescale";
+                if (rotationFactorx < 0)
+                     HostTransform.localScale += new Vector3(0.005f, 0.005f, 0.005f);
+                 if (rotationFactorx > 0)
+                     HostTransform.localScale -= new Vector3(0.005f, 0.005f, 0.005f);
+
+
+                 Vector3 newVect = new Vector3(HostTransform.localScale.x, HostTransform.localScale.y, HostTransform.localScale.z);
+                 newVect.x = Mathf.Clamp(newVect.x, 0.3f, 5);
+                 newVect.y = Mathf.Clamp(newVect.y, 0.3f, 5);
+                 newVect.z = Mathf.Clamp(newVect.z, 0.3f, 5);
+                 HostTransform.localScale = newVect;
+             }
 
             if (IsKeepUpright)
             {
                 Quaternion upRotation = Quaternion.FromToRotation(HostTransform.up, Vector3.up);
                 HostTransform.rotation = upRotation * HostTransform.rotation;
             }
+            lastDrag = draggingPosition;
         }
 
         /// <summary>
@@ -220,10 +264,14 @@ namespace HoloToolkit.Unity.InputModule
             {
                 return;
             }
-
+            HostTransform.GetComponent<Rigidbody>().isKinematic = false;
+            lastDrag = new Vector3(0, 0, 0);
             // Remove self as a modal input handler
             InputManager.Instance.PopModalInputHandler();
-
+            if (Echo != null)
+                Echo.Text = "";
+            Echo = null;
+            controller.removeHighlight();
             isDragging = false;
             currentInputSource = null;
             StoppedDragging.RaiseEvent();
@@ -268,6 +316,7 @@ namespace HoloToolkit.Unity.InputModule
             }
         }
 
+        
         public void OnInputDown(InputEventData eventData)
         {
             if (isDragging)
