@@ -4,3 +4,7 @@
 [submodule "Assets/UWBNetworkingPackage-LW"]
 	path = Assets/UWBNetworkingPackage-LW
 	url = https://github.com/UWB-ARSandbox/UWBNetworkingPackage-LW.git
+[submodule "Assets/Easy Wifi Controller"]
+	path = Assets/Easy Wifi Controller
+	url = https://github.com/UWB-ARSandbox/TUI-Controller
+	branch = Library_Format

@@ -651,7 +651,6 @@ namespace EasyWiFi.Core
         //used by the client to send controller data to the server
         async public static void sendClientLog(string message)
         {
-            
             byte[] bytes = Encoding.UTF8.GetBytes(message);
             if (clientState != EasyWiFiConstants.CURRENT_CLIENT_STATE.Broadcasting && clientState != EasyWiFiConstants.CURRENT_CLIENT_STATE.NotConnected)
             {
@@ -682,7 +681,6 @@ namespace EasyWiFi.Core
         //used by the client to send controller data to the server
         public static void sendClientLog(string message)
         {
-            
             byte[] bytes = Encoding.UTF8.GetBytes(message);
             if (clientState != EasyWiFiConstants.CURRENT_CLIENT_STATE.Broadcasting && clientState != EasyWiFiConstants.CURRENT_CLIENT_STATE.NotConnected)
             {
@@ -1649,7 +1647,6 @@ namespace EasyWiFi.Core
                 if (ip.Type == HostNameType.Ipv4)
                 {
                       localIP = ip.CanonicalName;
-                      
                 }
             }
             }catch (Exception ex)

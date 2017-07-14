@@ -15,8 +15,6 @@ public class AnchorTextAbove : MonoBehaviour
     {
         mainCamera = Camera.main;
         textTM = this.GetComponent<TextMesh>();
-        
-
     }
 
     // Update is called once per frame
