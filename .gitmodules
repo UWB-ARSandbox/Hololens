@@ -1,10 +1,11 @@
 [submodule "Assets/Resources[UWB]"]
 	path = Assets/Resources[UWB]
 	url = https://github.com/UWB-ARSandbox/Resources.git
-[submodule "Assets/UWBNetworkingPackage-LW"]
-	path = Assets/UWBNetworkingPackage-LW
-	url = https://github.com/UWB-ARSandbox/UWBNetworkingPackage-LW.git
 [submodule "Assets/Easy Wifi Controller"]
 	path = Assets/Easy Wifi Controller
 	url = https://github.com/UWB-ARSandbox/TUI-Controller
 	branch = Library_Format
+[submodule "Assets/ASL"]
+	path = Assets/ASL
+	url = https://github.com/UWB-ARSandbox/ASL
+	branch = Room_Texture_HololensCompatibility
